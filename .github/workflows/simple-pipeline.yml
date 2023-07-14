@@ -1,0 +1,33 @@
+name: jumpbox-website
+run-name: Jumpbox Website Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+    container:
+      image: docker:24.0.2-git
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Reload Environments
+        run: |
+          echo "VERSION=$(cargo pkgid | cut -d "#" -f2)"
+          echo "VERSION=$(cargo pkgid | cut -d "#" -f2)" >> $GITHUB_ENV
+      - name: Display Environments
+        run: |
+          echo "VERSION=${{ env.VERSION }}"
+      - name: Container Registry Login
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin    
+      - name: Containerize
+        run: |
+          docker build -t jumpboxacademy/jba-web:${{ env.VERSION }}  .
+          docker push jumpboxacademy/jba-web:${{ env.VERSION }} 
+      
