@@ -1,10 +1,10 @@
-name: jumpbox-website
-run-name: Jumpbox Website Pipeline
+name: cloud-camp-audition
+run-name: Jumpbox Cloud Camp
 
 on:
   push:
     branches:
-      - develop
+      - main
 
 jobs:
   ci:
